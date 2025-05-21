@@ -20,8 +20,7 @@ server = dashboard.server
 # =====================
 # 🔷 CARGA Y PREPARACIÓN DE DATOS
 # =====================
-#df = pd.read_csv(r"C:\Users\Teresa.Hernandez\Downloads\conversational_ai\dashboard_heraldo\1746771075409.csv")
-df = pd.read_csv(r"C:\Users\Teresa.Hernandez\Downloads\1747382241186.csv")
+df = pd.read_csv(r"1747382241186.csv")
 
 # Procesar la columna de fecha
 df["fecha"] = pd.to_datetime(df["START_DATE"]).dt.date
@@ -424,7 +423,8 @@ def descargar_csv(n_clicks):
 # 🔷 EJECUCIÓN LOCAL
 # =====================
 if __name__ == "__main__":
-    dashboard.run(debug=True)
+    dashboard.run(host="0.0.0.0", port=8050)
+
     
     
 #### Correr http://127.0.0.1:8050/

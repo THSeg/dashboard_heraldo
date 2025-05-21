@@ -20,7 +20,7 @@ server = dashboard.server
 # =====================
 # 🔷 CARGA Y PREPARACIÓN DE DATOS
 # =====================
-df = pd.read_csv(r"1747382241186.csv")
+df = pd.read_csv(r"1746771075409.csv")
 
 # Procesar la columna de fecha
 df["fecha"] = pd.to_datetime(df["START_DATE"]).dt.date

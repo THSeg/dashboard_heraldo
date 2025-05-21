@@ -23,7 +23,11 @@ server = dashboard.server
 df = pd.read_csv(r"1746771075409.csv")
 
 # Procesar la columna de fecha
-df["fecha"] = pd.to_datetime(df["START_DATE"]).dt.date
+# Procesar la columna de fecha con manejo de errores
+df["START_DATE"] = pd.to_datetime(df["START_DATE"], errors="coerce")
+df["fecha"] = df["START_DATE"].dt.date
+valid_fecha_unicas = df["fecha"].dropna().unique()
+
 
 
 # Convertir correctamente a booleano
@@ -235,13 +239,6 @@ dashboard.layout = dbc.Container([
     ], align="center", justify="between", className="my-4"),
 
     # Filtro de fecha (ahora arriba)
-    valid_dates = df["START_DATE"].dropna()
-    df["START_DATE"] = pd.to_datetime(valid_dates, errors="coerce")
-    df["fecha"] = df["START_DATE"].dt.date
-
-    # Construir opciones de dropdown solo con fechas válidas
-    valid_fecha_unicas = df["fecha"].dropna().unique()
-
     dcc.Dropdown(
         id="filtro_fecha",
         options=[{"label": "Todo el periodo", "value": "todos"}] +
@@ -250,6 +247,7 @@ dashboard.layout = dbc.Container([
         clearable=False,
         style={"width": "300px", "margin": "0 auto 20px"}
     )
+
 
     # Tabla resumen y botón de descarga
     html.Div([

@@ -235,15 +235,21 @@ dashboard.layout = dbc.Container([
     ], align="center", justify="between", className="my-4"),
 
     # Filtro de fecha (ahora arriba)
+    valid_dates = df["START_DATE"].dropna()
+    df["START_DATE"] = pd.to_datetime(valid_dates, errors="coerce")
+    df["fecha"] = df["START_DATE"].dt.date
+
+    # Construir opciones de dropdown solo con fechas válidas
+    valid_fecha_unicas = df["fecha"].dropna().unique()
+
     dcc.Dropdown(
         id="filtro_fecha",
-        #options=[{"label": str(fecha), "value": str(fecha)} for fecha in sorted(df["fecha"].unique())],
         options=[{"label": "Todo el periodo", "value": "todos"}] +
-        [{"label": str(fecha), "value": str(fecha)} for fecha in sorted(df["fecha"].unique())],
+                [{"label": str(fecha), "value": str(fecha)} for fecha in sorted(valid_fecha_unicas)],
         value=str(df["fecha"].min()),
         clearable=False,
         style={"width": "300px", "margin": "0 auto 20px"}
-    ),
+    )
 
     # Tabla resumen y botón de descarga
     html.Div([

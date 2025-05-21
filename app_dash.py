@@ -23,10 +23,10 @@ server = dashboard.server
 df = pd.read_csv(r"1746771075409.csv")
 
 # Procesar la columna de fecha
-# Procesar la columna de fecha con manejo de errores
 df["START_DATE"] = pd.to_datetime(df["START_DATE"], errors="coerce")
+df = df[df["START_DATE"].notna()]  # ✅ Filtrar filas sin fecha válida
 df["fecha"] = df["START_DATE"].dt.date
-valid_fecha_unicas = df["fecha"].dropna().unique()
+valid_fecha_unicas = sorted(df["fecha"].unique())
 
 
 
@@ -242,11 +242,12 @@ dashboard.layout = dbc.Container([
     dcc.Dropdown(
         id="filtro_fecha",
         options=[{"label": "Todo el periodo", "value": "todos"}] +
-                [{"label": str(fecha), "value": str(fecha)} for fecha in sorted(valid_fecha_unicas)],
-        value=str(df["fecha"].min()),
+                [{"label": str(fecha), "value": str(fecha)} for fecha in valid_fecha_unicas],
+        value=str(valid_fecha_unicas[0]),  # ✅ garantizado que existe
         clearable=False,
         style={"width": "300px", "margin": "0 auto 20px"}
     ),
+
 
 
     # Tabla resumen y botón de descarga

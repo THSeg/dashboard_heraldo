@@ -246,7 +246,7 @@ dashboard.layout = dbc.Container([
         value=str(df["fecha"].min()),
         clearable=False,
         style={"width": "300px", "margin": "0 auto 20px"}
-    )
+    ),
 
 
     # Tabla resumen y botón de descarga

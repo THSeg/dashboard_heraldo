@@ -239,13 +239,13 @@ dashboard.layout = dbc.Container([
     ], align="center", justify="between", className="my-4"),
 
     # Filtro de fecha (ahora arriba)
-    dcc.Dropdown(
-        id="filtro_fecha",
-        options=[{"label": "Todo el periodo", "value": "todos"}] +
-                [{"label": str(fecha), "value": str(fecha)} for fecha in valid_fecha_unicas],
-        value=str(valid_fecha_unicas[0]),  # ✅ garantizado que existe
-        clearable=False,
-        style={"width": "300px", "margin": "0 auto 20px"}
+    dcc.DatePickerRange(
+      id="filtro_fecha_rango",
+      start_date=df["fecha"].min(),
+      end_date=df["fecha"].max(),
+      display_format="DD/MM/YYYY",
+      style={"width": "350px", "margin": "0 auto 20px"},
+      minimum_nights=0,
     ),
 
 
@@ -315,19 +315,22 @@ dashboard.layout = dbc.Container([
     Output("tabla1_partido1", "data"),
     Output("tabla2_partido2", "data"),
     Output("tabla1_resumen", "data"),
-    Input("filtro_fecha", "value")
+    Input("filtro_fecha_rango", "start_date"),
+    Input("filtro_fecha_rango", "end_date"),
 )
-def actualizar_con_fecha(fecha_str):
-    if fecha_str == "todos":
-        df_filtrado = df.copy()
-    else:
-        fecha = pd.to_datetime(fecha_str).date()
-        df_filtrado = df[df['fecha'] == fecha]
+def actualizar_con_rango(start_date, end_date):
+    # Filtrar el DataFrame por el rango de fechas
+    if not start_date or not end_date:
+        return dash.no_update, dash.no_update, dash.no_update, [], [], []
     
+    fecha_inicio = pd.to_datetime(start_date).date()
+    fecha_fin = pd.to_datetime(end_date).date()
+    
+    df_filtrado = df[(df["fecha"] >= fecha_inicio) & (df["fecha"] <= fecha_fin)]
     if df_filtrado.empty:
         return dash.no_update, dash.no_update, dash.no_update, [], [], []
-    df_validas = df_filtrado[df_filtrado['interaction_user'] == True].copy()
-
+    df_validas = df_filtrado[df_filtrado["interaction_user"] == True].copy()
+    
     # Tabla resumen
     resumen_df = df_filtrado.groupby("tipo_interaccion").size().reset_index(name="conteo")
     total_llamadas = resumen_df["conteo"].sum()
